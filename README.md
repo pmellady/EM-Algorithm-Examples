@@ -94,7 +94,7 @@ Now we have an iterative method:
 * Initialize values for $\hat{q}, \hat{p}_1, \hat{p}_2$
 * Use the values to find $\hat{\gamma}_{1i}$
 * Use $\hat{\gamma}_{1i}$ to update $\hat{q}$, $\hat{p}_1$, $\hat{p}_2$
-* Repeat steps 2-3 until convergence
+* Iterate to convergence
 
 # Example 2: Missing Data
 The following problem is taken from Casella and Berger chapter 7 exercise 29. In this problem, we observe paired data $(X_i,Y_i)$ for $i=1,2,\cdots,n$ where the $Y_i$ are independent with $Y_i\sim pois(m\beta\tau_i)$, independent of $(X_1,X_2,\cdots,X_n)\sim MN(m,\boldsymbol{\tau})$ with $\boldsymbol{\tau}=(\tau_1,\tau_2,\cdots,\tau_n)$ and $\sum_{i=1}^n\tau_i=1$ and $\sum_{i=1}^nx_i=m$. We first find the joint mass function of $(Y,X)$.

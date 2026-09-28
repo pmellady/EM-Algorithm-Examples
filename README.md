@@ -31,10 +31,12 @@ $$
 
 Now, to perform the EM, we will find the expected likelihood of our sample with respect to the latent $z_i$'s. To simplify notation, we let
 
+$$
 \begin{align*}
 Q(\Theta^{(r)}, \Theta^{(r-1)})&=E_{Z|X, p_1, p_2, q}[L(X|p_1, p_2, q, Z)]\\
 q(\Theta^{(r)}, \Theta^{(r-1)})&=E_{Z|X, p_1, p_2, q}[log(L(X|p_1, p_2, q, Z))]
 \end{align*}
+$$
 
 where $\Theta=(q, p_1, p_2)$. So we have
 
@@ -44,22 +46,27 @@ $$
 
 and
 
+$$
 \begin{align*}
 q(\Theta^{(r)}, \Theta^{(r-1)})&=E_{Z|X, p_1, p_2, q}[log(\Pi_{i=1}^n[{m\choose x_i} p_1^{x_i} (1-p_1)^{m-x_1} q]^{z_i} \cdot[{m\choose x_i} p_2^{x_i} (1-p_2)^{m-x_1} (1-q)]^{1-z_i}])\\
                 &=E_{Z|X, p_1, p_2, q}[\Sigma_{i=1}^n[z_i[log{m\choose x_i}+x_i log(p_1)+(m-x_i)log(1-p_1)+log(q)]+\\
                 &(1-z_i)[log{m\choose x_i}+x_i log(p_2)+(m-x_i)log(1-p_2)+log(1-q)]]]
 \end{align*}
+$$
 
 Now that we have the expected log-likelihood, we can push the expectation through to obtain
 
+$$
 \begin{align*}
 q(\Theta^{(r)}, \Theta^{(r-1)})&=\Sigma_{i=1}^n[\hat{\gamma}_{1i}^{(r)}[log{m\choose x_i}+x_i log(p_1)+\\
 &(m-x_i)log(1-p_1)+log(q)]+(1-\hat{\gamma}_{1i}^{(r)})[log{m\choose x_i}+x_i log(p_2)+(m-x_i)log(1-p_2)+log(1-q)]]
 \end{align*}
+$$
 
 ## Finding Derivatives to Maximize Iteratively
 We will now take the derivative with respect to the $(r+1)^{th}$ iterations, and since $\hat{\gamma}_{1i}^{(r)}$ is based on the $(r-1)^{th}$ iteration, it will be treated as a constant. We now differentiate with respect to $q$ and set this equal to $0$ first:
 
+$$
 \begin{align*}
 \dfrac{dq(\Theta^{(r)}, \Theta^{(r-1)})}{dq}&=\Sigma_{i=1}^n[\hat{\gamma}_{1i}^{(r)}\frac{1}{q}-(1-\hat{\gamma}_{1i}^{(r)})\frac{1}{1-q}]=0\\
 &\implies\frac{1}{q(1-q)}\Sigma_{i=1}^n[\hat{\gamma}_{1i}^{(r)}(1-q)-(1-\hat{\gamma}_{1i}^{(r)})q]=0\\
@@ -67,10 +74,11 @@ We will now take the derivative with respect to the $(r+1)^{th}$ iterations, and
 &\implies\Sigma_{i=1}^n\hat{\gamma}_{1i}^{(r)}=nq\\
 &\implies\frac{\Sigma_{i=1}^n\hat{\gamma}_{1i}^{(r)}}{n}=\hat{q}^{(r+1)}
 \end{align*}
-
+$$
 
 Next, we will take the derivative with respect to $p_1$, which gives
 
+$$
 \begin{align*}
 \dfrac{dq(\Theta^{(r)}, \Theta^{(r-1)})}{dp_1}&=\Sigma_{i=1}^n[\hat{\gamma}_{1i}^{(r)}[\frac{x_i}{p_1} -\frac{m-x_i}{1-p_1}]]=0\\
 &\implies\frac{1}{p_1(1-p_1)}\Sigma_{i=1}^n[\hat{\gamma}_{1i}^{(r)}[x_i(1-p_1) -(m-x_i)p_1]]=0\\
@@ -78,6 +86,7 @@ Next, we will take the derivative with respect to $p_1$, which gives
 &\implies\Sigma_{i=1}^n\hat{\gamma}_{1i}^{(r)}x_i= \Sigma_{i=1}^n\hat{\gamma}_{1i}^{(r)}mp_1\\
 &\implies\frac{\Sigma_{i=1}^n\hat{\gamma}_{1i}^{(r)}x_i}{m\Sigma_{i=1}^n\hat{\gamma}_{1i}^{(r)}}=\hat{p_1}^{(r+1)}
 \end{align*}
+$$
 
 From the symmetry of the problem, we find that
 
@@ -138,18 +147,22 @@ $$
 ## Finding Estimates with Missing Data
 While the above is useful is we have all the data, we will suppose we are missing $x_1$. We will use the above forms as a starting point for our analysis. See that we can write both forms above in terms of $x_1$
 
+$$
 \begin{align*}
 \hat{\beta}&=\frac{\sum_{i=1}^ny_i}{x_1+\sum_{i=1}^nx_i}\\
 \hat{\tau}_i&=\frac{y_i+x_i}{\sum_{i=1}^ny_i+\sum_{i=1}^nx_i+x_1}
 \end{align*}
+$$
 
 We also know that, marginally, $X_1\sim bin(m,\tau_1)$, so, heuristically, we can guess that the missing data estimates will have the form:
 
+$$
 \begin{align*}
 \hat{\beta}^{(r+1)}&=\frac{\sum_{i=1}^ny_i}{m\hat{\tau_1}^{(r)}+\sum_{i=1}^nx_i}\\
 \hat{\tau}^{(r+1)}_i&=\frac{y_i+x_i}{\sum_{i=1}^ny_i+\sum_{i=1}^nx_i+m\hat{\tau_1}^{(r)}},\quad\text{for }i\ne1\\
 \hat{\tau}^{(r+1)}_1&=\frac{y_1+m\hat{\tau_1}^{(r)}}{\sum_{i=1}^ny_i+\sum_{i=1}^nx_i+m\hat{\tau_1}^{(r)}}
 \end{align*}
+$$
 
 We can make this process rigorous by reintroducing the conditional expected log-likelihood that we saw in the first example. Let 
 
@@ -159,6 +172,7 @@ $$
 
 We will differentiate $q$ with respect to our parameters. See that
 
+$$
 \begin{align*}
 \frac{dq}{d\beta}=\frac{d}{d\beta}E_{X_1|X,Y}(l)=E_{X_1|X,Y}(\frac{dl}{d\beta})&=E_{X_1|X,Y}(\sum_{i=1}^n[-m\tau_i+\frac{y_i}{\beta}])\\
                                                                                &=E_{X_1|X,Y}(-m\sum_{i=1}^n\tau_i+\frac{1}{\beta}\sum_{i=1}^ny_i)\\
@@ -168,6 +182,7 @@ We will differentiate $q$ with respect to our parameters. See that
                                                                                &=-E_{X_1|X,Y}(x_1)-\sum_{i=2}^nx_i+\frac{1}{\beta}\sum_{i=1}^ny_i\\
                                                                                &=-m\tau_1^{(r)}-\sum_{i=2}^nx_i+\frac{1}{\beta^{(r+1)}}\sum_{i=1}^ny_i
 \end{align*}
+$$
 
 Setting this equal to zero and solving gives the following estimate
 
@@ -177,6 +192,7 @@ $$
 
 Similarly, for $\tau_j$
 
+$$
 \begin{align*}
 \frac{dq}{d\tau_j}=\frac{d}{d\tau_j}E_{X_1|X,Y}(l)=E_{X_1|X,Y}(\frac{dl}{d\tau_j})&=E_{X_1|X,Y}(-m\beta+\frac{y_j+x_j}{\tau_j})\\
                                                                                   &=-m\beta^{(r)}+E_{X_1|X,Y}(\frac{y_j+x_j}{\tau_j^{(r+1)}})\\
@@ -184,6 +200,7 @@ Similarly, for $\tau_j$
                                                                                   &=-m\beta^{(r)}+\frac{y_j}{\tau_j^{(r+1)}}+E_{X_1|X,Y}(\frac{x_j}{\tau_j^{(r+1)}})\\
                                                                                   &=-m\beta^{(r)}+\frac{y_j}{\tau_j^{(r+1)}}+\frac{E_{X_1|X,Y}(x_j)}{\tau_j^{(r+1)}}\\
 \end{align*}
+$$
 
 Now, if $j=1$, we get the following when we set the above expression equal to zero
 

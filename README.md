@@ -139,7 +139,7 @@ $$
 
 
 ## Finding Estimates with Missing Data
-While the above is useful if we have all the data, we will suppose we do not observe $\textbf{x}$. (If only $x_1$ were missing, the constraint $\sum_{i=1}^nx_i=m$ would force $x_1=m-\sum_{i=2}^nx_i$, leaving nothing to impute.) We will use the above forms as a starting point for our analysis. See that the estimates above depend on the unobserved data only through the $x_i$:
+While the above is useful if we have all the data, we will suppose we do not observe $\textbf{x}$ (a departure from the original problem). We will use the above forms as a starting point for our analysis. See that the estimates above depend on the unobserved data only through the $x_i$:
 
 $$
 \begin{align*}

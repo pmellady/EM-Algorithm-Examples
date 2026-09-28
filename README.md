@@ -9,8 +9,10 @@ We first state the problem by specifying the distribution from which we obtain o
 In addition to the mixture distribution as stated in the problem, we will assign latent variables $Z_1, Z_2, \cdots, Z_n$ that have the property that if $Z_i=1$ then we know $X_i\sim bin(m, p_1)$. Thus, by the statement of our problem and the definition of our latent variables, we have:
 
 $$
+\begin{align*}
 X_1, X_2, X_2, \cdots, X_n\sim qbin(m,p_1)+(1-q)bin(m,p_2)\\
 X_i|Z_i=1\sim bin(m, p_1)
+\end{align*}
 $$
 
 ### Finding the Necessary Quantities

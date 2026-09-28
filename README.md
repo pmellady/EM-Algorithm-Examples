@@ -30,7 +30,7 @@ $$
 \hat{\gamma}_{1i}^{(r)}=\frac{{m\choose x_i}(\hat{p}_1^{(r-1)})^{x_i}(1-\hat{p}_1^{(r-1)})^{m-x_i}\cdot \hat{q}^{(r-1)}}{{m\choose x_i}(\hat{p}_1^{(r-1)})^{x_i}(1-\hat{p}_1^{(r-1)})^{m-x_i}\cdot \hat{q}^{(r-1)}+{m\choose x_i}(\hat{p}_2^{(r-1)})^{x_i}(1-\hat{p}_2^{(r-1)})^{m-x_i}\cdot (1-\hat{q}^{(r-1)})}
 $$
 
-Now, to perform the EM, we will find the expected likelihood of our sample with respect to the latent $z_i$'s. To simplify notation, we let
+Where $\hat p_i^{(r-1)}$ and $\hat q^{(r-1)}$ are the estimates for $p_i$ and $q$ from iteration $r-1$. Now, to perform the EM, we will find the expected likelihood of our sample with respect to the latent $z_i$'s. To simplify notation, we let
 
 $$
 \begin{align*}

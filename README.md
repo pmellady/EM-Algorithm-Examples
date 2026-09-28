@@ -49,9 +49,9 @@ and
 
 $$
 \begin{align*}
-q(\Theta^{(r)}, \Theta^{(r-1)})&=E_{Z|X, p_1, p_2, q}[log(\Pi_{i=1}^n[{m\choose x_i} p_1^{x_i} (1-p_1)^{m-x_1} q]^{z_i} \cdot[{m\choose x_i} p_2^{x_i} (1-p_2)^{m-x_1} (1-q)]^{1-z_i}])\\
-                &=E_{Z|X, p_1, p_2, q}[\Sigma_{i=1}^n[z_i[log{m\choose x_i}+x_i log(p_1)+(m-x_i)log(1-p_1)+log(q)]+\\
-                &(1-z_i)[log{m\choose x_i}+x_i log(p_2)+(m-x_i)log(1-p_2)+log(1-q)]]]
+q(\Theta^{(r)}, \Theta^{(r-1)})&=E_{Z|X, p_1, p_2, q}[\ln(\Pi_{i=1}^n[{m\choose x_i} p_1^{x_i} (1-p_1)^{m-x_1} q]^{z_i} \cdot[{m\choose x_i} p_2^{x_i} (1-p_2)^{m-x_1} (1-q)]^{1-z_i}])\\
+                &=E_{Z|X, p_1, p_2, q}[\Sigma_{i=1}^n[z_i[\ln{m\choose x_i}+x_i \ln(p_1)+(m-x_i)\ln(1-p_1)+\ln(q)]+\\
+                &(1-z_i)[\ln{m\choose x_i}+x_i \ln(p_2)+(m-x_i)\ln(1-p_2)+\ln(1-q)]]]
 \end{align*}
 $$
 
@@ -59,8 +59,8 @@ Now that we have the expected log-likelihood, we can push the expectation throug
 
 $$
 \begin{align*}
-q(\Theta^{(r)}, \Theta^{(r-1)})&=\Sigma_{i=1}^n[\hat{\gamma}_{1i}^{(r)}[log{m\choose x_i}+x_i log(p_1)+\\
-&(m-x_i)log(1-p_1)+log(q)]+(1-\hat{\gamma}_{1i}^{(r)})[log{m\choose x_i}+x_i log(p_2)+(m-x_i)log(1-p_2)+log(1-q)]]
+q(\Theta^{(r)}, \Theta^{(r-1)})&=\Sigma_{i=1}^n[\hat{\gamma}_{1i}^{(r)}[\ln{m\choose x_i}+x_i \ln(p_1)+\\
+&(m-x_i)\ln(1-p_1)+\ln(q)]+(1-\hat{\gamma}_{1i}^{(r)})[\ln{m\choose x_i}+x_i \ln(p_2)+(m-x_i)\ln(1-p_2)+\ln(1-q)]]
 \end{align*}
 $$
 

@@ -35,7 +35,7 @@ Where $\hat p_i^{(r-1)}$ and $\hat q^{(r-1)}$ are the estimates for $p_i$ and $q
 $$
 \begin{align*}
 Q(\Theta^{(r)}, \Theta^{(r-1)})&=E_{Z|X, p_1, p_2, q}[L(X|p_1, p_2, q, Z)]\\
-q(\Theta^{(r)}, \Theta^{(r-1)})&=E_{Z|X, p_1, p_2, q}[log(L(X|p_1, p_2, q, Z))]
+q(\Theta^{(r)}, \Theta^{(r-1)})&=E_{Z|X, p_1, p_2, q}[\ln(L(X|p_1, p_2, q, Z))]
 \end{align*}
 $$
 

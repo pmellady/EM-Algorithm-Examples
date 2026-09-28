@@ -1,6 +1,8 @@
 #################################
 ####### EM Algorithm ############
 #################################
+library(ggplot2)
+library(patchwork)
 
 # This file contains two examples of implementing the EM algorithm. The first 
 # example is a mixture model of two binomial distributions where we augment
@@ -24,94 +26,84 @@ p2<-.9
 P.true<-c(q, p1, p2)
 
 # Generate Data
-dat<-function(n){
+dat<-function(n, m, q, p1, p2){
   Z<-rbinom(n, 1, q)
-  X<-c()
-  for(i in 1:n){
-    if(Z[i]==1){
-      Xi<-rbinom(1,m,p1)
-    }
-    else{
-      Xi<-rbinom(1,m,p2)
-    }
-    X<-c(X, Xi)
-  }
-  
+  probs<-p1*Z+p2*(1-Z)
+  X<-rbinom(n, m, probs)
   return(X)
 }
 
 # Define variable to calculate posterior probabilities
-gamma1<-function(X, P){
+gamma1<-function(m, X, P){
   gam<-c()
-  for(i in 1:n){
-    num<-P[1]*dbinom(X[i], m, P[2])
-    denom<-P[1]*dbinom(X[i], m, P[2])+(1-P[1])*dbinom(X[i], m, P[3])
-    g<-num/denom
-    gam<-c(gam,g)
-  }
-  return(gam)
+  num<-P[1]*dbinom(X, m, P[2])
+  denom<-P[1]*dbinom(X, m, P[2])+(1-P[1])*dbinom(X, m, P[3])
+  return(num/denom)
+}
+
+# Likelihood function to track maximization
+log_lik<-function(m, X, P){
+  sum(log(P[1]*dbinom(X, m, P[2])+(1-P[1])*dbinom(X, m, P[3])))
 }
 
 # EM Algorithm Function
-EM<-function(data, P, epsilon=.00001){
-  q_vec<-c()
-  p1_vec<-c()
-  p2_vec<-c()
-  P.old<-P
+EM_binom<-function(X, P, epsilon=.00001, max_iters=5000){
+  ll<-c(-Inf)
+  params<-matrix(P, nrow=1)
+  ll<-c(ll, log_lik(m, X, P))
   
-  gamma1_n<-gamma1(data, P.old)
-  gamma0_n<-1-gamma1(data, P.old)
-  
-  q_n<-sum(gamma1_n)/sum(gamma0_n+gamma1_n)
-  p1_n<-sum(gamma1_n*data)/sum(m*gamma1_n)
-  p2_n<-sum(gamma0_n*data)/sum(m*gamma0_n)
-  
-  q_vec<-c(q_vec, q_n)
-  p1_vec<-c(p1_vec, p1_n)
-  p2_vec<-c(p2_vec, p2_n)
-  
-  P.new<-c(q_n, p1_n, p2_n)
-  
-  count<-0
-  while(sum((P.new-P.old)^2)>=epsilon){
-    P.old<-P.new
+  ll_1<-ll[1]
+  ll_2<-ll[2]
+  k<-2
+  while(ll_1<ll_2){
+    P.old<-params[k-1,]
     
-    gamma1_n<-gamma1(data, P.old)
-    gamma0_n<-1-gamma1(data, P.old)
+    gamma1_n<-gamma1(m, X, P.old)
+    gamma0_n<-1-gamma1(m, X, P.old)
     
     q_n<-sum(gamma1_n)/sum(gamma0_n+gamma1_n)
-    p1_n<-sum(gamma1_n*data)/sum(m*gamma1_n)
-    p2_n<-sum(gamma0_n*data)/sum(m*gamma0_n)
+    p1_n<-sum(gamma1_n*X)/sum(m*gamma1_n)
+    p2_n<-sum(gamma0_n*X)/sum(m*gamma0_n)
     
-    q_vec<-c(q_vec, q_n)
-    p1_vec<-c(p1_vec, p1_n)
-    p2_vec<-c(p2_vec, p2_n)
+    params<-rbind(params, c(q_n, p1_n, p2_n))
     
-    P.new<-c(q_n, p1_n, p2_n)
+    ll_1<-ll_2
+    ll_2<-log_lik(m, X, params[k,])
+    ll<-c(ll, ll_2)
     
-    count<-count+1
-    if(count%%100==0){
-      print(count)
+    k<-k+1
+    if(k%%100==0){
+      print(k)
     }
-    if(count>5000){
-      break
-    }
+    if(k>max_iters) break
     
   }
-  return(list(est=P.new, q_trace=q_vec, p1_trace=p1_vec, p2_trace=p2_vec, iterations=count))
+  
+  est<-params[nrow(params),]
+  return(list(est=est, iterations=k-1, ll=ll, params_trace=params))
 }
 
-data<-dat(n)
-res<-EM(data, P.init)
+X<-dat(n, m, q, p1, p2)
+res<-EM_binom(X, P.init)
 
 # PLotting the data as well as the trace of our parameters
-par(mfrow=c(2,2))
-hist(data)
-plot(res$q_trace)
-plot(res$p1_trace)
-plot(res$p2_trace)
+for_plot<-data.frame(x=X,
+                     y=res$est[1]*dbinom(X, m, res$est[2])+
+                       (1-res$est[1])*dbinom(X, m, res$est[3]))
 
+ggplot(for_plot)+geom_histogram(aes(x, after_stat(density)))+
+  geom_point(aes(x=x, y=y), color="red")+
+  geom_segment(aes(x=x, y=0, xend=x, yend = y), color="red")+
+  xlab("X")+ylab("Density")+labs(title="Observed Data and Model Implied Mixture")
 
+trace_df<-as.data.frame(cbind(1:res$iterations, res$params_trace))
+colnames(trace_df)<-c("Iteration", "q", "p1", "p2")
+
+(ggplot(trace_df)+geom_point(aes(x=Iteration, y=q))+ylab("Mixing Parameter")) /
+  (ggplot(trace_df)+geom_point(aes(x=Iteration, y=p1, color="p1"))+
+     geom_point(aes(x=Iteration, y=p2, color="p2"))+ylab("Probability")+
+     scale_colour_manual(name="Parameter",
+                         values=c(p1="orange", p2="blue")))
 
 
 ################################################################################
@@ -119,60 +111,68 @@ plot(res$p2_trace)
 ################################################################################
 
 # Initialize the true values
-n<-100
-m<-200
+n<-20
+m<-50
 beta<-5
 tau<-rep(1/n, n)
-vrai<-c(tau, beta)
+truth<-list(tau=tau, beta=beta)
 
 # Generate the Data
-Y<-c()
-for(i in 1:n){
-  y<-rpois(1, m*beta*tau[i])
-  Y<-c(Y,y)
-}
-
+Y<-rpois(n, m*beta*tau)
 X<-rmultinom(1, m, tau)
 
 # Initialize Starting Guesses for Parameters
 t<-c(rep(1/(2*n), n/2 ), rep(3/(2*n), (n/2)))
 b<-3
-init<-c(t,b)
+init<-list(tau=t, beta=b)
 
 # EM algorithm Function
-EM<-function(X, Y, init, epsilon){
-  vec<-init
-  t<-vec[1:n]
-  b<-vec[n+1]
-  k<-0
-  while(sum((vrai-vec)^2)>=epsilon){
-    b0 <- b
-    t0 <- t
-    
-    b<-sum(Y)/(m*t0[1]+sum(X[2:n]))
-    
-    t[1]<-(Y[1]+m*t0[1])/(m*b)
-    
-    for(i in 2:n){
-      t[i]<-(Y[i]+X[i])/(m*b)
-    }
-    
-    
-    vec<-c(t,b)
-    
-    
+EM_pois<-function(X, Y, init, truth, epsilon=1e-8, lim=500000){
+  # Create the likelihood stopping condition
+  ## Log likelihood vector to track increase
+  ll<-c()
+  beta<-init$beta
+  tau<-init$tau
+  
+  
+  ## First imputation point
+  beta<-sum(Y)/m
+  tau<-(Y+m*tau)/(sum(Y)+m)
+  ll<-c(ll, sum(dpois(Y, m*beta*tau, log=TRUE)))
+  
+  ## Second imputation point
+  beta<-sum(Y)/m
+  tau<-(Y+m*tau)/(sum(Y)+m)
+  ll<-c(ll, sum(dpois(Y, m*beta*tau, log=TRUE)))
+  
+  ## Set iterations to 2, initiate the stopping condition
+  k<-2
+  l1<-ll[1]
+  l2<-ll[2]
+  while(l1<l2){
+    beta<-sum(Y)/m
+    tau<-(Y+m*tau)/(sum(Y)+m)
+
+    l1<-l2
+    l2<-sum(dpois(Y, m*beta*tau, log=TRUE))
+    ll<-c(ll, l2)
+
     k<-k+1
     if(k%%50000==0){
       print(k)
     }
     
-    if(k>500000){
-      break
-    }
+    if(k>lim) break
     
   }
-  return(list(sol=vec, iter=k, error_tau=sum((vrai[1:n]-vec[1:n])^2), error_beta=sum((vrai[n+1]-vec[n+1])^2)))
+  
+  sol<-list(tau=tau, beta=beta)
+  return(list(sol=sol, iter=k, error_tau=sum((truth$tau-tau)^2),
+              error_beta=sum((truth$beta-beta)^2), ll=ll))
 }
 
 
-res<-EM(X, Y, init, .00001)
+res<-EM_pois(X, Y, init, truth, .00001, 50000)
+
+ggplot()+geom_line(aes(x=1:res$iter, y=res$ll))+
+  xlab("Iteration")+ylab("Log Likelihood")+labs(title="Log Likelihood Trace")

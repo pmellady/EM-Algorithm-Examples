@@ -4,9 +4,7 @@ Here are a couple examples of using the EM algorithm on statistical data. One ex
 In this problem, we have a mixture of two binomial random variables with mixture parameter $q$. These binomials share a size, $m$, but they have success probabilities $p_1$ and $p_2$, respectively. The EM algorithm maximizes the posterior log likelihood given the previous iteration.
 
 ## Distributional Problem Statement
-We first state the problem by specifying the distribution from which we obtain our sample. After stating the distribution of the sample, we can maximize the incomplete log likelihood via an iterative method. 
-
-In addition to the mixture distribution as stated in the problem, we will assign latent variables $Z_1, Z_2, \cdots, Z_n$ that have the property that if $Z_i=1$ then we know $X_i\sim bin(m, p_1)$. Thus, by the statement of our problem and the definition of our latent variables, we have:
+We start by specifying the distribution from which we obtain our sample. With this distribution, we can maximize the incomplete log likelihood via an iterative method. To do this, we assign latent variables $Z_1, Z_2, \cdots, Z_n$ that satisfy $X_i|Z_i=1\sim bin(m, p_1)$. These distributional statements give:
 
 $$
 \begin{align*}
@@ -16,7 +14,7 @@ X_i|Z_i=1&\sim bin(m, p_1)
 $$
 
 ### Finding the Necessary Quantities
-We will first use this to find the posterior distribution of $Z_i|X_i$ using Bayes' rule.
+We will use the above distributional statements to find the posterior distribution of $Z_i|X_i$ using Bayes' rule.
 
 
 $$
@@ -51,11 +49,11 @@ $$
 \begin{align*}
 q(\Theta^{(r)}, \Theta^{(r-1)})&=E_{Z|X, p_1, p_2, q}[\ln(\Pi_{i=1}^n[{m\choose x_i} p_1^{x_i} (1-p_1)^{m-x_1} q]^{z_i} \cdot[{m\choose x_i} p_2^{x_i} (1-p_2)^{m-x_1} (1-q)]^{1-z_i}])\\
                 &=E_{Z|X, p_1, p_2, q}[\Sigma_{i=1}^n[z_i[\ln{m\choose x_i}+x_i \ln(p_1)+(m-x_i)\ln(1-p_1)+\ln(q)]+\\
-                &(1-z_i)[\ln{m\choose x_i}+x_i \ln(p_2)+(m-x_i)\ln(1-p_2)+\ln(1-q)]]]
+                &\qquad\qquad(1-z_i)[\ln{m\choose x_i}+x_i \ln(p_2)+(m-x_i)\ln(1-p_2)+\ln(1-q)]]]
 \end{align*}
 $$
 
-Now that we have the expected log-likelihood, we can push the expectation through to obtain
+Now that we have the log-likelihood, we exploit the linearity of expectation to obtain
 
 $$
 \begin{align*}
@@ -65,7 +63,7 @@ q(\Theta^{(r)}, \Theta^{(r-1)})&=\Sigma_{i=1}^n[\hat{\gamma}_{1i}^{(r)}[\ln{m\ch
 $$
 
 ## Finding Derivatives to Maximize Iteratively
-We will now take the derivative with respect to the $(r+1)^{th}$ iterations, and since $\hat{\gamma}_{1i}^{(r)}$ is based on the $(r-1)^{th}$ iteration, it will be treated as a constant. We now differentiate with respect to $q$ and set this equal to $0$ first:
+We can now find $\nabla_{\Theta^{(r)}} q(\Theta^{(r)}, \Theta^{(r-1)})$ with respect to the $r^{th}$ iteration. Note that, since $\hat{\gamma}_{1i}^{(r)}$ is based on the $(r-1)^{th}$ iteration, it is constant with respect to differentiation. We find the gradient by component, starting with $q$:
 
 $$
 \begin{align*}
@@ -98,9 +96,9 @@ $$
 ## The Iterative Method
 Now we have an iterative method:
 
-* Initialize values for $\hat{q}, \hat{p_1}, \hat{p_2}$
+* Initialize values for $\hat{q}, \hat{p}_1, \hat{p}_2$
 * Use the values to find $\hat{\gamma}_{1i}$
-* Use $\hat{\gamma}_{1i}$ to update $\hat{q}$, $\hat{p_1}$, $\hat{p_2}$
+* Use $\hat{\gamma}_{1i}$ to update $\hat{q}$, $\hat{p}_1$, $\hat{p}_2$
 * Repeat steps 2-3 until convergence
 
 # Example 2: Missing Data
